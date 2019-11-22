@@ -5,6 +5,7 @@ import os
 import xnat
 import subprocess
 import shutil
+import zipfile
 from glob import glob
 from heuristic import infotodict, is_derived
 
@@ -29,12 +30,11 @@ def app_args():
     parser.add_argument('--deface', type=str2bool, help='Deface anatomical images?', default=True)
     return parser.parse_args()
 
-def dicom_dir(in_dir, scan_id):
-    dicoms = sorted( glob( '{}/SCANS/{}/*/*.dcm'.format(in_dir, scan_id) ) )
+def download_scan(scan):
+    scan.download_dir("/tmp".format(scan.id))
+    dicoms = sorted( glob( '/tmp/*/scans/{}*/*/*/files/*.dcm'.format(scan.id) ) )
     if dicoms:
-        return os.path.basename( os.path.dirname( dicoms[0] ) )
-    else:
-        return 'DICOM'
+        return os.path.dirname( dicoms[0] )
 
 def main():
     args = app_args()
@@ -48,12 +48,10 @@ def main():
         bidsname = infotodict(scan)
         print( '{} - {} ({}) | bidsname: {}'.format(scan.id, scan.type, scan.series_description, bidsname))
         is_anat = str(bidsname).startswith('ANAT')
-        dcm_dir = dicom_dir(args.input, scan.id)
+        scan_dir = download_scan(scan)
 
         # Converting and saving NIFTI files
-        if args.save_nifti or (args.deface and is_anat):
-            scan_dir = os.path.realpath( '{}/SCANS/{}/{}'.format(args.input, scan.id, dcm_dir) )
-            
+        if args.save_nifti or (args.deface and is_anat):            
             # DICOM files not found
             if not os.path.isdir(scan_dir):
                 continue

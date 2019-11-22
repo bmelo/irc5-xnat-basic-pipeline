@@ -4,7 +4,6 @@ Command to Label
 Usage: command2label <command>...
 '''
 
-
 import re
 import sys
 import json
