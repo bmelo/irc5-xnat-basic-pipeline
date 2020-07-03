@@ -31,7 +31,7 @@ def app_args():
     return parser.parse_args()
 
 def download_scan(scan):
-    scan.download_dir("/tmp".format(scan.id))
+    scan.download_dir("/tmp")
     dicoms = sorted( glob( '/tmp/*/scans/{}*/*/*/files/*.dcm'.format(scan.id) ) )
     if dicoms:
         return os.path.dirname( dicoms[0] )
@@ -70,7 +70,7 @@ def main():
 
         # Remove DICOMs when NIFTIs were saved
         if args.save_nifti and args.remove_dicoms:
-            sess.delete('/data/archive/experiments/{}/scans/{}/resources/{}'.format(args.session, scan.id, dcm_dir))
+            sess.delete('/data/archive/experiments/{}/scans/{}/resources/{}'.format(args.session, scan.id, scan_dir))
         
         # Renaming, if necessary
         if args.rename_types and bidsname and scan.type != bidsname:
