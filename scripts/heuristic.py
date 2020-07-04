@@ -26,7 +26,7 @@ def infotodict(scan):
     fmap  = 'FMAP'
     dwi   = 'DWI_{acq}'
 
-    series_desc = scan.series_description.lower()
+    series_desc = "" if not scan.series_description else scan.series_description.lower()
 
     t1list = ['t1', 'mprage', 'scout', 'mp2rage']
     # MPR is a derivative image
